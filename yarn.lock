@@ -2233,10 +2233,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.8.3":
-  version: 4.8.3
-  resolution: "hono@npm:4.8.3"
-  checksum: cacd43002e5345547cd568c4d831f5d40b54ec8fe2f80dd03cf21d45d2112f31d08e6f57399d7ae08c0fc2329342113cdc4f0e46f3de52c971afe8ef9414c51f
+"hono@npm:^4.9.6":
+  version: 4.9.6
+  resolution: "hono@npm:4.9.6"
+  checksum: fb55d72219f16f0817198f2d2b57fcc9e9a9298046a5d820f9bb2d0446bb92c1223fc8bad240cf96e9c3d3f33c941e5e71148b9dc585af4a96cbaf9170054e4e
   languageName: node
   linkType: hard
 
@@ -2906,7 +2906,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "server@workspace:server"
   dependencies:
-    hono: ^4.8.3
+    hono: ^4.9.6
     wrangler: latest
   languageName: unknown
   linkType: soft
