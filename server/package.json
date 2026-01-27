@@ -4,7 +4,7 @@
 		"dev": "wrangler dev"
 	},
 	"dependencies": {
-		"hono": "^4.8.3"
+		"hono": "^4.11.7"
 	},
 	"devDependencies": {
 		"wrangler": "latest"
