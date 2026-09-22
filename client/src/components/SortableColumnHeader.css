@@ -1,0 +1,19 @@
+.sortable-column-header {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.sortable-column-header-icon {
+  min-width: 1rem;
+  text-align: center;
+}

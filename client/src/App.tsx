@@ -1,37 +1,82 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
+import type { FacilityDetails, FacilityUnitStatus } from './types/Facility'
+import { FacilitiesTable } from './features/facilities/FacilitiesTable'
+import { FacilityFilters } from './features/facilities/FacilityFilters'
+import { getFacilities } from './features/facilities/getFacilities'
+import { TableSummary } from './features/facilities/TableSummary'
+import { parseFacility } from './helpers/facility'
+import { filterFacilitiesByStateAndFueltech } from './helpers/filterFacilities'
+import type { FueltechGroup } from './helpers/fueltech'
+import type { State } from './helpers/state'
 import './App.css'
 
 function App() {
-  const [message, setMessage] = useState<string | null>(null);
+  const [facilityDetails, setFacilityDetails] = useState<FacilityDetails[]>([])
+  const [statusFilters, setStatusFilters] = useState<FacilityUnitStatus[]>([])
+  const [stateFilters, setStateFilters] = useState<State[]>([])
+  const [fueltechGroupFilters, setFueltechGroupFilters] = useState<
+    FueltechGroup[]
+  >([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        let abort = false;
+  useEffect(() => {
+    const controller = new AbortController()
 
-        fetch("/api/message").then(async (res) => {
-            if (res.ok) {
-                const body = await res.json();
-                if (abort) {
-                    return;
-                }
-                setMessage(body.message);
-            }
-        });
+    const loadFacilities = async () => {
+      setLoading(true)
+      setError(null)
 
-        return () => {
-            abort = true;
+      try {
+        const { facilities } = await getFacilities(
+          statusFilters,
+          controller.signal,
+        )
+
+        setFacilityDetails(facilities)
+      } catch (requestError) {
+        if (requestError instanceof Error && requestError.name !== 'AbortError') {
+          setError(requestError.message)
         }
-    }, []);
+      } finally {
+        if (!controller.signal.aborted) setLoading(false)
+      }
+    }
+
+    loadFacilities()
+
+    return () => controller.abort()
+  }, [statusFilters])
+
+  const filteredFacilityDetails = filterFacilitiesByStateAndFueltech(facilityDetails, {
+    states: stateFilters,
+    fueltechGroups: fueltechGroupFilters,
+  })
+  const facilities = filteredFacilityDetails.map((facility) => parseFacility(facility))
 
   return (
-      <>
-          <h1>RenewMap code challenge</h1>
-          <p className="read-the-docs">
-              This is the starter repository for the code challenge provided to you by the interviewer.
-          </p>
-          <div className="card">
-              {message || "🌀🌀🌀"}
-          </div>
-      </>
+    <main>
+      <h1>Energy facilities in Australia</h1>
+      <FacilityFilters
+            onFueltechGroupsChange={setFueltechGroupFilters}
+            onStatesChange={setStateFilters}
+            onStatusesChange={setStatusFilters}
+            selectedFueltechGroups={fueltechGroupFilters}
+            selectedStates={stateFilters}
+            selectedStatuses={statusFilters}
+          />
+      {error && <p role="alert">Unable to load facilities: {error}</p>}
+
+      {facilities.length > 0 && <FacilitiesTable facilities={facilities} />}
+
+      {(!loading || facilities.length > 0) && (
+        <TableSummary
+          facilities={filteredFacilityDetails}
+        />
+      )}
+
+      {!loading && facilities.length === 0 && <p>No facilities found.</p>}
+    </main>
   )
 }
 
